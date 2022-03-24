@@ -1,3 +1,5 @@
 __pycache__
 output/
-.idea/
+.idea
+.ipynb_checkpoints
+.git
