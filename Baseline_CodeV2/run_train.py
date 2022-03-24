@@ -1,5 +1,6 @@
 import argparse
 import os
+import yaml
 
 import numpy as np
 import torch
@@ -15,6 +16,18 @@ from utils import (
     get_user_seqs,
     set_seed,
 )
+
+class dotdict(dict):
+    """_summary_
+    
+    dot.notation access to dictionary attributes
+    
+    Args:
+        dict (_type_): dot을 이용하여 dictionary value에 접근할 수 있도록 하는 모듈
+    """
+    __getattr__ = dict.get
+    __setattr__ = dict.__setitem__
+    __delattr__ = dict.__delitem__
 
     
 def train():
@@ -115,11 +128,12 @@ def train():
     trainer.model.load_state_dict(torch.load(args.checkpoint_path))
     scores, result_info = trainer.test(0)
     print(result_info)
-
-
-if __name__ == "__main__":
+    
+def read_arguments():
     parser = argparse.ArgumentParser()
-
+    
+    parser.add_argument("--use_config", action="store_true")
+    
     parser.add_argument("--data_dir", default="../input/data/train/", type=str)  
     parser.add_argument("--output_dir", default="output/", type=str)
     parser.add_argument("--data_name", default="Ml", type=str)
@@ -151,6 +165,21 @@ if __name__ == "__main__":
     parser.add_argument("--using_pretrain", action="store_true")
 
     args = parser.parse_args()
-    print(args)
+    
+    if args.use_config:
+        args = dotdict(vars(args))
+        with open('train_config.yaml') as f:
+            tmp_args = yaml.load(f,Loader=yaml.FullLoader)
+        for k, v in tmp_args.items():
+            args[k] = v
+    
+    print('-'*20, 'arguments list', '-'*20)
+    for k, v in args.items():
+        print(k, ':', v)
+    print('-'*50)
+    return args
+
+if __name__ == "__main__":
+    args = read_arguments()
     
     train()
