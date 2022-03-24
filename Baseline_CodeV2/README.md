@@ -1,6 +1,6 @@
-# Movie Recommendation Baseline Code
+# Movie Recommendation Baseline Code V2
 
-영화 추천 대회를 위한 베이스라인 코드입니다. 다음 코드를 대회에 맞게 재구성 했습니다.
+영화 추천 대회를 위한 베이스라인 코드를 '알잘딱깔센'팀에 맞춰 재구성한 코드입니다.
 
 - 코드 출처: https://github.com/aHuiWang/CIKM2020-S3Rec
 
