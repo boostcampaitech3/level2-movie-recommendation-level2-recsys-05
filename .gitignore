@@ -1,4 +1,6 @@
-__pycache__
+__pycache__/
+*.py[cod]
+Baseline_CodeV2/__pycache__/
 output/
 .idea
 .ipynb_checkpoints
