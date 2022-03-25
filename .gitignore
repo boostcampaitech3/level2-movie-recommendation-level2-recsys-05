@@ -3,5 +3,5 @@ __pycache__/
 Baseline_CodeV2/__pycache__/
 output/
 .idea/
-Baseline_CodeV2/mlruns
+Baseline_CodeV2/experiment_mlflow
 Baseline_CodeV2/mlruns
