@@ -16,6 +16,10 @@ from utils import (
     set_seed,
 )
 
+import mlflow
+import mlflow.pytorch
+# import pytorch_lightning
+
     
 def train():
     set_seed(args.seed)         # 시드 설정
@@ -120,7 +124,10 @@ def train():
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--data_dir", default="../input/data/train/", type=str)  
+    remote_server_uri = 'http://101.101.211.226:30005'
+    mlflow.set_tracking_uri(remote_server_uri)
+
+    parser.add_argument("--data_dir", default="../../input/data/train/", type=str)  
     parser.add_argument("--output_dir", default="output/", type=str)
     parser.add_argument("--data_name", default="Ml", type=str)
 
@@ -150,7 +157,27 @@ if __name__ == "__main__":
 
     parser.add_argument("--using_pretrain", action="store_true")
 
+    # -- mlflow args
+    parser.add_argument('--experiment', type=str, default='Test', help='set experiment name (default: Test)')
+    parser.add_argument('--user', type=str, default='unknown', help='set experiment username')
+
     args = parser.parse_args()
     print(args)
     
-    train()
+    experiment_name_dict = {
+        'Test': "Test_experiment",  # default
+        'Base' : "Base_model_experimet", 
+        'Custom' : "Custom_model_experiment", # custom model
+    }
+    
+    experiment_name = experiment_name_dict[args.experiment]
+    mlflow.set_experiment(experiment_name)
+    experiment = mlflow.get_experiment_by_name(experiment_name)
+    client = mlflow.tracking.MlflowClient()
+
+    run = client.create_run(experiment.experiment_id)
+
+    with mlflow.start_run(run_id=run.info.run_id):
+        mlflow.set_tag('mlflow.user', args.user)
+        mlflow.log_params(args.__dict__)
+        train()
