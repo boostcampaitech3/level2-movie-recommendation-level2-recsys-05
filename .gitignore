@@ -3,3 +3,8 @@ __pycache__/
 Baseline_CodeV2/__pycache__/
 output/
 .idea/
+.ipynb_checkpoints
+.git
+.idea/
+submission/
+model/
