@@ -5,6 +5,7 @@ output/
 .idea/
 .ipynb_checkpoints
 .git
-.idea/
 submission/
 model/
+Baseline_CodeV2/experiment_mlflow
+Baseline_CodeV2/mlruns
