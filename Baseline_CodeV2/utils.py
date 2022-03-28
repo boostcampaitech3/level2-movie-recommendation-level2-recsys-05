@@ -30,6 +30,7 @@ def check_path(path):
 def neg_sample(item_set, item_size):
     """
     negative sampling을 수행
+    랜덤하게 아이템을 뽑고, 유저의 아이템 집합에 있는지 확인 후 없으면 리턴하는 방식
 
     Args:
         item_set (set): 아이템 집합
