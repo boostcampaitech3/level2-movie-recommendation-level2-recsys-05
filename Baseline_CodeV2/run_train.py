@@ -7,8 +7,6 @@ import numpy as np
 import torch
 from torch.utils.data import DataLoader, RandomSampler, SequentialSampler
 
-from datasets import SASRecDataset
-from trainers import FinetuneTrainer
 from utils import (
     EarlyStopping,
     check_path,
@@ -81,13 +79,14 @@ def train():
     args.train_matrix = valid_rating_matrix  # 학습할 매트릭스를 valid_rating_matrix로 지정
 
     # -- dataset
-    train_dataset = SASRecDataset(args, user_seq, data_type="train")
+    dataset_module = getattr(import_module("datasets"), args.dataset)
+    train_dataset = dataset_module(args, user_seq, data_type="train")
     train_sampler = RandomSampler(train_dataset)
 
-    eval_dataset = SASRecDataset(args, user_seq, data_type="valid")
+    eval_dataset = dataset_module(args, user_seq, data_type="valid")
     eval_sampler = SequentialSampler(eval_dataset)
 
-    test_dataset = SASRecDataset(args, user_seq, data_type="test")
+    test_dataset = dataset_module(args, user_seq, data_type="test")
     test_sampler = SequentialSampler(test_dataset)
 
     # -- data loader
@@ -104,11 +103,12 @@ def train():
     )
 
     # -- model
-    # model = S3RecModel(args=args)
     model_module = getattr(import_module("models"), args.model)
     model = model_module(args=args)
 
-    trainer = FinetuneTrainer(
+    trainer_module = getattr(import_module("trainers"), args.trainer)
+
+    trainer = trainer_module(
         model, train_dataloader, eval_dataloader, test_dataloader, None, args
     )
 
