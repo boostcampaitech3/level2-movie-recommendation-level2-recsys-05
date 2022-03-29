@@ -3,7 +3,6 @@ import torch
 import torch.nn as nn
 import tqdm
 from torch.optim import Adam
-from mlflow import mlflow
 
 from utils import ndcg_k, recall_at_k
 
@@ -289,9 +288,13 @@ class FinetuneTrainer(Trainer):
                 batch_user_index = user_ids.cpu().numpy()
                 rating_pred[self.args.train_matrix[batch_user_index].toarray() > 0] = 0
 
-                # -- 유사도가 높은 10개의 아이템 추출 
-                ind = np.argpartition(rating_pred, -10)[:, -10:]  # partition(data, -10) : 정렬 상관없이 큰 값 10개를 뒤로 민다.
-                arr_ind = rating_pred[np.arange(len(rating_pred))[:, None], ind] # arg가 앞에 붙은 함수는 값이 아닌 index 반환
+                # -- 유사도가 높은 10개의 아이템 추출
+                ind = np.argpartition(rating_pred, -10)[
+                    :, -10:
+                ]  # partition(data, -10) : 정렬 상관없이 큰 값 10개를 뒤로 민다.
+                arr_ind = rating_pred[
+                    np.arange(len(rating_pred))[:, None], ind
+                ]  # arg가 앞에 붙은 함수는 값이 아닌 index 반환
                 arr_ind_argsort = np.argsort(arr_ind)[np.arange(len(rating_pred)), ::-1]
 
                 batch_pred_list = ind[
