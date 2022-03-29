@@ -4,9 +4,9 @@ import torch.nn as nn
 from modules import Encoder, LayerNorm
 
 
-class S3RecModel(nn.Module):
+class S3Rec(nn.Module):
     def __init__(self, args):
-        super(S3RecModel, self).__init__()
+        super(S3Rec, self).__init__()
         self.item_embeddings = nn.Embedding(
             args.item_size, args.hidden_size, padding_idx=0
         )

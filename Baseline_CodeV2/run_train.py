@@ -103,7 +103,7 @@ def train():
     )
 
     # -- model
-    model_module = getattr(import_module("models"), args.model)
+    model_module = getattr(import_module("models.S3Rec"), args.model)
     model = model_module(args=args)
 
     trainer_module = getattr(import_module("trainers"), args.trainer)
