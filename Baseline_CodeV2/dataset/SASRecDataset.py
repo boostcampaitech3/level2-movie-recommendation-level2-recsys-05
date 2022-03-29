@@ -104,7 +104,7 @@ class PretrainDataset(Dataset):
                 now_attribute = self.args.item2attribute[str(item)]
                 for a in now_attribute:
                     attribute[a] = 1
-            except:
+            except BaseException:
                 pass
             attributes.append(attribute)
 
@@ -129,19 +129,19 @@ class PretrainDataset(Dataset):
 
 
 class SASRecDataset(Dataset):
-    def __init__(self, args, user_seq, test_neg_items=None, data_type="train"):         
+    def __init__(self, args, user_seq, test_neg_items=None, data_type="train"):
         """
         Args:
             args (Namespace): args를 저장해둔 Namespace(이름에 따라 객체를 매핑하는 형태)
             user_seq (list): 2차원 리스트 형태 -> [[유저1의 아이템들][...][유저n의 아이템들]]
             test_neg_items (_type_, optional): _description_. Defaults to None.
             data_type (str, optional): train, valid, test, submission를 넣으면 각각 타입에 맞는 데이터 생성. Defaults to "train".
-        """        
+        """
         self.args = args
         self.user_seq = user_seq
         self.test_neg_items = test_neg_items
         self.data_type = data_type
-        self.max_len = args.max_seq_length    # hyperparams. Default = 50
+        self.max_len = args.max_seq_length  # hyperparams. Default = 50
 
     def __getitem__(self, index):
         """
@@ -149,10 +149,10 @@ class SASRecDataset(Dataset):
             index (int): user_id
 
         Returns:
-            torch.tensor: test_neg_items 있다면 (user_id, input_ids, target_pos, target_neg, answer, test_samples) 
+            torch.tensor: test_neg_items 있다면 (user_id, input_ids, target_pos, target_neg, answer, test_samples)
                           test_neg_items 없다면 (user_id, input_ids, target_pos, target_neg, answer)
 
-        """        
+        """
         user_id = index
         items = self.user_seq[index]
 
@@ -191,20 +191,22 @@ class SASRecDataset(Dataset):
             answer = []
 
         target_neg = []
-        seq_set = set(items)       # 아이템 집합
+        seq_set = set(items)  # 아이템 집합
         for _ in input_ids:
-            target_neg.append(neg_sample(seq_set, self.args.item_size))  # neg_sampling을 해준 item을 target_neg에 추가
+            target_neg.append(
+                neg_sample(seq_set, self.args.item_size)
+            )  # neg_sampling을 해준 item을 target_neg에 추가
 
-        pad_len = self.max_len - len(input_ids)   # (유저 시퀀스 수 - 유저 id 수)만큼을 패딩 길이로 저장
-        input_ids = [0] * pad_len + input_ids     # 유저 id 앞에 패딩 추가
-        target_pos = [0] * pad_len + target_pos   # target pos(소비) 앞에 패딩 추가
-        target_neg = [0] * pad_len + target_neg   # target neg(소비X?) 앞에 패딩 추가
+        pad_len = self.max_len - len(input_ids)  # (유저 시퀀스 수 - 유저 id 수)만큼을 패딩 길이로 저장
+        input_ids = [0] * pad_len + input_ids  # 유저 id 앞에 패딩 추가
+        target_pos = [0] * pad_len + target_pos  # target pos(소비) 앞에 패딩 추가
+        target_neg = [0] * pad_len + target_neg  # target neg(소비X?) 앞에 패딩 추가
 
-        input_ids = input_ids[-self.max_len :]    # input_ids의 (-유저 시퀀스 수) 이후 데이터
+        input_ids = input_ids[-self.max_len :]  # input_ids의 (-유저 시퀀스 수) 이후 데이터
         target_pos = target_pos[-self.max_len :]  # target_pos의 (-유저 시퀀스 수) 이후 데이터
         target_neg = target_neg[-self.max_len :]  # target_neg의 (-유저 시퀀스 수) 이후 데이터
 
-        assert len(input_ids) == self.max_len     
+        assert len(input_ids) == self.max_len
         assert len(target_pos) == self.max_len
         assert len(target_neg) == self.max_len
 

@@ -79,7 +79,7 @@ def train():
     args.train_matrix = valid_rating_matrix  # 학습할 매트릭스를 valid_rating_matrix로 지정
 
     # -- dataset
-    dataset_module = getattr(import_module("datasets"), args.dataset)
+    dataset_module = getattr(import_module(f"dataset.{args.dataset}"), args.dataset)
     train_dataset = dataset_module(args, user_seq, data_type="train")
     train_sampler = RandomSampler(train_dataset)
 
@@ -103,7 +103,7 @@ def train():
     )
 
     # -- model
-    model_module = getattr(import_module("models.S3Rec"), args.model)
+    model_module = getattr(import_module(f"models.{args.model}"), args.model)
     model = model_module(args=args)
 
     trainer_module = getattr(import_module("trainers"), args.trainer)
