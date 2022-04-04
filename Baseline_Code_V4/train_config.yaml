@@ -1,0 +1,11 @@
+# 데이터 경로
+data_dir: "/opt/ml/input/data/train"
+
+submission_path : "../submission"
+submission_name : "multi-DAE_v2_submission.csv"
+
+# 모델 저장 경로 model_name : "Multi-DAE_v2.pt"
+model_dir : "saved_model"
+name : Multi_DAE_test
+
+seed : 5

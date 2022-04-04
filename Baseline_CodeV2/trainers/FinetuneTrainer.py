@@ -73,10 +73,16 @@ class Trainer:
         }
         print(post_fix)
 
+        # mlflow.log_metric("best RECALL@5", recall[0], epoch)
+        # mlflow.log_metric("best NDCG@5", ndcg[0], epoch)
+        # mlflow.log_metric("best RECALL@10", recall[1], epoch)
+        # mlflow.log_metric("best NDCG@10", ndcg[1], epoch)
+
         return [recall[0], ndcg[0], recall[1], ndcg[1]], str(post_fix)
 
     def save(self, file_name):
         torch.save(self.model.cpu().state_dict(), file_name)
+        # mlflow.pytorch.log_model(self.model, 'bestModel')
         self.model.to(self.device)
 
     def load(self, file_name):
@@ -257,6 +263,9 @@ class FinetuneTrainer(Trainer):
                 "rec_cur_loss": "{:.4f}".format(rec_cur_loss),
             }
 
+            # mlflow.log_metric("Train/rec_avg_loss", rec_avg_loss, epoch * len(rec_data_iter) + i)
+            # mlflow.log_metric("Train/rec_cur_loss", rec_cur_loss, epoch * len(rec_data_iter) + i)
+
             if (epoch + 1) % self.args.log_freq == 0:
                 print(str(post_fix))
 
@@ -279,10 +288,13 @@ class FinetuneTrainer(Trainer):
                 batch_user_index = user_ids.cpu().numpy()
                 rating_pred[self.args.train_matrix[batch_user_index].toarray() > 0] = 0
 
-                ind = np.argpartition(rating_pred, -10)[:, -10:]
-
-                arr_ind = rating_pred[np.arange(len(rating_pred))[:, None], ind]
-
+                # -- 유사도가 높은 10개의 아이템 추출
+                ind = np.argpartition(rating_pred, -10)[
+                    :, -10:
+                ]  # partition(data, -10) : 정렬 상관없이 큰 값 10개를 뒤로 민다.
+                arr_ind = rating_pred[
+                    np.arange(len(rating_pred))[:, None], ind
+                ]  # arg가 앞에 붙은 함수는 값이 아닌 index 반환
                 arr_ind_argsort = np.argsort(arr_ind)[np.arange(len(rating_pred)), ::-1]
 
                 batch_pred_list = ind[
