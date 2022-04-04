@@ -16,6 +16,9 @@ import argparse
 
 from box import Box
 
+import mlflow
+import mlflow.pytorch
+
 
 def matrix_main(config, model_type):
     device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -89,12 +92,16 @@ def matrix_main(config, model_type):
             torch.save(
                 model.state_dict(), os.path.join(config.model_path, config.model_name)
             )
+            mlflow.pytorch.log_model(model, 'bestModel')
 
         print(
             f"Epoch: {epoch:3d}| Train loss: {train_loss:.5f}| NDCG@10: {ndcg:.5f}| HIT@10: {hit:.5f}"
         )
-
-
+        
+        mlflow.log_metric("Train_loss", train_loss, epoch)
+        mlflow.log_metric("NDCG-10", ndcg, epoch)
+        mlflow.log_metric("HIT-10", hit, epoch)
+    
 if __name__ == "__main__":
 
     config = {
@@ -138,9 +145,50 @@ if __name__ == "__main__":
         os.mkdir(config.submission_path)
 
     parser = argparse.ArgumentParser()
+    
+    remote_server_uri = "http://101.101.211.226:30005"
+    mlflow.set_tracking_uri(remote_server_uri)
+    
     parser.add_argument("--model_type", default="MultiVAE", type=str)
+    
+    # -- mlflow args
+    parser.add_argument(
+        "--experiment",
+        type=str,
+        default="Test",
+        help="set experiment name (default: Test)",
+    )
+    parser.add_argument(
+        "--run_name", type=str, default="test_run", help="set experiment runname"
+    )
+    parser.add_argument(
+        "--user", type=str, default="unknown", help="set experiment username"
+    )
+    
     args = parser.parse_args()
-    if args.model_type not in ["MultiVAE", "MultiDAE", "AutoRec", "RecVAE"]:
-        print("Not in model_type")
-    else:
-        matrix_main(config=config, model_type=args.model_type)
+        
+    # -- mlflow experiment
+    experiment_name_dict = {
+        "Test": "Test_experiment",  # default
+        "Matrix": "Matrix_model_experimet",
+        "Graph": "Graph_model_experiment",
+        "Sequence": "Sequence_model_experiment" 
+    }
+
+    experiment_name = experiment_name_dict[args.experiment]
+    mlflow.set_experiment(experiment_name)
+    experiment = mlflow.get_experiment_by_name(experiment_name)
+    client = mlflow.tracking.MlflowClient()
+
+    run = client.create_run(experiment.experiment_id)
+
+    with mlflow.start_run(run_id=run.info.run_id):
+        mlflow.set_tag("mlflow.user", args.user)
+        mlflow.set_tag("mlflow.runName", args.run_name)
+        mlflow.log_params(args.__dict__)
+        mlflow.log_params(config)
+    
+        if args.model_type not in ["MultiVAE", "MultiDAE", "AutoRec", "RecVAE"]:
+            print("Not in model_type")
+        else:
+            matrix_main(config=config, model_type=args.model_type)
