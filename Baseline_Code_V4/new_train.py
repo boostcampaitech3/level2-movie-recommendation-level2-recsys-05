@@ -225,20 +225,19 @@ if __name__ == "__main__":
 
     # 모델 args
     # TODO: 모델 args 파싱하여 dotdict형태로 저장
-    
+
     margs = None
     with open(f"./model_config/{args.model_config}.yaml") as f:
         tmp_args = yaml.load(f, Loader=yaml.FullLoader)
         margs = dotdict(tmp_args)
-        
+
     print("-" * 20, "model arguments list", "-" * 20)
-    for k, v in args.items():
+    for k, v in margs.items():
         print(k, ":", v)
     print("-" * 50)
-    
-    margs = None
+
     experiment = Experiment(args, margs)
-    
+
     experiment.run()
 
     # args = parser.parse_args()
