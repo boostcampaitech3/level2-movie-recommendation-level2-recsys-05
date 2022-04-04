@@ -1,6 +1,6 @@
 import numpy as np
 import torch
-from metric import get_ndcg, get_hit
+from .metric import get_ndcg, get_hit
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 

@@ -21,7 +21,7 @@ def matrix_main(config, model_type):
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
     make_matrix_data_set = MakeMatrixDataSet(config=config)
-    user_valid = make_matrix_data_set.get_train_valid_data[1]
+    user_valid = make_matrix_data_set.get_train_valid_data()[1]
 
     ae_dataset = AEDataSet(
         num_user=make_matrix_data_set.num_user,
@@ -103,25 +103,25 @@ if __name__ == "__main__":
         "submission_path": "../submission",
         "submission_name": "multi-VAE_submission.csv",
         "model_path": "../model",  # 모델 저장 경로
-        "model_name": "Multi-VAE_v1.pt",
+        "model_name": "test.pt",
         "seed": 22,
         "lr": 0.001,
         "batch_size": 256,
-        "num_epochs": 200,
+        "num_epochs": 1,
         "num_workers": 2,
         "valid_samples": 10,
         "weight_decay": 0.00,
         # #### VAE
+        "p_dims": [100, 200, 400],
+        "dropout_rate": 0.5,
+        "anneal_cap": 0.2,
+        "total_anneal_steps": 200000,
+        # # #### DAE
         # "p_dims": [100, 200, 400],
         # "dropout_rate": 0.5,
-        # "anneal_cap": 0.2,
-        # "total_anneal_steps": 200000,
-        # #### DAE
-        # "p_dims": [100, 200, 400],
-        # "dropout_rate": 0.5,
-        # #### AutoRec
+        # # #### AutoRec
         # "hidden_dim": 64,
-        # #### RecVAE
+        # # #### RecVAE
         # "hidden_dim": 300,
         # "latent_dim": 100,
         # "dropout_rate": 0.7,
