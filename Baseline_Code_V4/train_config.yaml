@@ -8,4 +8,8 @@ submission_name : "multi-DAE_v2_submission.csv"
 model_dir : "saved_model"
 name : Multi_DAE_test
 
+#사용할 모델
+model : multiDAE
+model_config : multiDAE_config
+
 seed : 5
