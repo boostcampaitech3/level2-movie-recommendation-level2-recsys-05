@@ -13,6 +13,6 @@ model : MultiDAE
 model_config : MultiDAE_config
 
 # 사용할 데이터셋
-dataset : MatrixDataSet
+dataset : MatrixDataset
 
 seed : 5

@@ -1,3 +1,8 @@
+trainer: MatrixBasedTrainer
+use_data_loader: yes
+optimizer: adam
+preprocessor: AEDataset
+
 p_dims:
   - 250
   - 500
