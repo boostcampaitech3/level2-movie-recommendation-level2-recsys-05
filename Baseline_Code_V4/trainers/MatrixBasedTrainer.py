@@ -1,8 +1,11 @@
 import torch
+import numpy as np
+import tqdm
 from trainers.trainer import Trainer
 from torch.utils.data import DataLoader
 from trainers.Optimizer import Optimizer
 from importlib import import_module
+import trainers.metric as metric
 
 
 class MatrixBasedTrainer(Trainer):
@@ -32,8 +35,16 @@ class MatrixBasedTrainer(Trainer):
 
     def train(self):
         self.model.train()
+
+        rec_data_iter = tqdm.tqdm(
+            self.dataloader,
+            desc="Recommendation EP_%s train" % (self.args.model),
+            total=len(self.dataloader),
+            bar_format="{l_bar}{r_bar}",
+        )
+
         loss_val = 0
-        for users in self.dataloader:
+        for users in rec_data_iter:
             mat = self.dataset.make_matrix(users)
             mat = mat.to(self.device)
             loss = self.model(mat)
@@ -50,8 +61,37 @@ class MatrixBasedTrainer(Trainer):
         return loss_val
 
     def evaluate(self):
-        print("not implemented yet")
-        pass
+        self.model.eval()
+
+        NDCG = 0.0  # NDCG@10
+        HIT = 0.0  # HIT@10
+
+        rec_data_iter = tqdm.tqdm(
+            self.dataloader,
+            desc="Recommendation EP_%s evaluate" % (self.args.model),
+            total=len(self.dataloader),
+            bar_format="{l_bar}{r_bar}",
+        )
+
+        with torch.no_grad():
+            for users in rec_data_iter:
+                mat = self.dataset.make_matrix(users)
+                mat = mat.to(self.device)
+
+                recon_mat = self.model(mat, calculate_loss=False)
+                recon_mat[mat == 1] = -np.inf
+                rec_list = recon_mat.argsort(dim=1)
+
+                for user, rec in zip(users, rec_list):
+                    uv = self.margs.user_valid[user.item()]
+                    up = rec[-10:].cpu().numpy().tolist()
+                    NDCG += metric.get_ndcg(pred_list=up, true_list=uv)
+                    HIT += metric.get_hit(pred_list=up, true_list=uv)
+
+        NDCG /= len(self.dataloader.dataset)
+        HIT /= len(self.dataloader.dataset)
+
+        return NDCG, HIT
 
     def preprocess_dataset(self, margs):
         preprocess_module = getattr(
