@@ -24,8 +24,6 @@ class Experiment:
         print("run experiment")
         self.model.to(self.device)
 
-        # TODO: train.py 의 main 함수를 구현
-
         best_hit = 0
         for epoch in range(1, self.margs.num_epochs + 1):
 
@@ -35,7 +33,7 @@ class Experiment:
             if best_hit < hit:
                 best_hit = hit
                 print(
-                    f"New best model for best hit! {best_hit} saving the best model.."
+                    f"New best model for best hit! HIT@10: {best_hit:.5f} saving the best model.."
                 )
                 torch.save(
                     self.model.state_dict(),
