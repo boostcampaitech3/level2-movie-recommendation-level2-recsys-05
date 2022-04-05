@@ -19,6 +19,9 @@ from box import Box
 import mlflow
 import mlflow.pytorch
 
+import nni
+from nni.utils import merge_parameter
+
 
 def matrix_main(config, model_type):
     device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -102,6 +105,7 @@ def matrix_main(config, model_type):
         mlflow.log_metric("NDCG-10", ndcg, epoch)
         mlflow.log_metric("HIT-10", hit, epoch)
     
+        nni.report_final_result(hit)   
 if __name__ == "__main__":
 
     config = {
@@ -166,7 +170,8 @@ if __name__ == "__main__":
     )
     
     args = parser.parse_args()
-        
+    tuner_params = nni.get_next_parameter()
+
     # -- mlflow experiment
     experiment_name_dict = {
         "Test": "Test_experiment",  # default
