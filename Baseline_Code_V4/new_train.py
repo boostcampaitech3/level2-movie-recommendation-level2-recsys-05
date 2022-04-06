@@ -4,8 +4,8 @@ from utils import seed_everything
 import yaml
 
 from experiment import Experiment
-import mlflow
-import mlflow.pytorch
+import mlflow 
+import mlflow.pytorch 
 
 if __name__ == "__main__":
 
@@ -45,11 +45,11 @@ if __name__ == "__main__":
     
     run = client.create_run(mlflow_experiment.experiment_id)
     
-    with mlflow.start_run(run_id=run.info.run_id):
-        mlflow.set_tag("mlflow.user", args.user)
-        mlflow.set_tag("mlflow.runName", args.run_name)
+    with mlflow.start_run(run_id=run.info.run_id): 
+        mlflow.set_tag("mlflow.user", args.user) 
+        mlflow.set_tag("mlflow.runName", args.run_name) 
         
-        mlflow.log_dict(dict(args), args.run_name+"_args.yaml")
-        mlflow.log_dict(dict(margs_artifacts), args.run_name+"_margs.yaml")
+        mlflow.log_dict(dict(args), args.run_name+"_args.yaml") 
+        mlflow.log_dict(dict(margs_artifacts), args.run_name+"_margs.yaml")  
         
         experiment.run()

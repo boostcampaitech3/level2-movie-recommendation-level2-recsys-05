@@ -43,15 +43,15 @@ class Experiment:
                     self.model.state_dict(),
                     os.path.join(self.save_dir, f"{self.args.name}_best.pth"),
                 )
-                mlflow.pytorch.log_model(self.model, f"{self.args.name}_bestModel")
+                mlflow.pytorch.log_model(self.model, f"{self.args.name}_bestModel") 
 
             print(
                 f"Epoch: {epoch:3d}| Train loss: {train_loss:.5f}| NDCG@10: {ndcg:.5f}| HIT@10: {hit:.5f}"
             )
 
-            mlflow.log_metric("Train_loss", float(train_loss), epoch)
-            mlflow.log_metric("NDCG-10", float(ndcg), epoch)
-            mlflow.log_metric("HIT-10", float(hit), epoch)
+            mlflow.log_metric("Train_loss", float(train_loss), epoch) 
+            mlflow.log_metric("NDCG-10", float(ndcg), epoch) 
+            mlflow.log_metric("HIT-10", float(hit), epoch) 
             
             
     def init_model(self, args, margs):
