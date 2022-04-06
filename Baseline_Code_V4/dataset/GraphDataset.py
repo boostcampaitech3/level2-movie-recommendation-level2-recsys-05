@@ -1,3 +1,4 @@
+from dataset.dataset import Dataset
 import os
 import pandas as pd
 import random
@@ -6,16 +7,11 @@ from collections import defaultdict
 import scipy.sparse as sp
 
 
-class GraphDataset:
-    """
-    GraphDataSet 생성
-    """
-
+class GraphDataset(Dataset):
     def __init__(self, args, margs):
         self.args = args
         self.margs = margs
-
-        self.df = pd.read_csv(os.path.join(self.args.data_path, "train_ratings.csv"))
+        self.df = pd.read_csv(os.path.join(self.args.data_dir, "train_ratings.csv"))
 
         self.item_encoder, self.item_decoder = self.generate_encoder_decoder("item")
         self.user_encoder, self.user_decoder = self.generate_encoder_decoder("user")
@@ -150,10 +146,7 @@ class GraphDataset:
     def get_R_data(self):
         return self.R_train, self.R_valid, self.R_total
 
-    def get_ngcf_adj_matrix_data(self):
-        return self.ngcf_adj_matrix
-
-    def split_matrix(X, n_splits=10):
+    def split_matrix(self, X, n_splits=10):
         splits = []
         chunk_size = X.shape[0] // n_splits
         for i in range(n_splits):
@@ -161,3 +154,6 @@ class GraphDataset:
             end = X.shape[0] if i == n_splits - 1 else (i + 1) * chunk_size
             splits.append(X[start:end])
         return splits
+    
+    def get_ngcf_adj_matrix_data(self):
+        return self.ngcf_adj_matrix
