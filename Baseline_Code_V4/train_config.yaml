@@ -6,13 +6,18 @@ submission_name : "test_submission.csv"
 
 # 모델 저장 경로 model_name : "Multi-DAE_v2.pt"
 model_dir : "./saved_model"
-name : NGCF
+name : MultiDAE
 
 # 사용할 모델
-model : NGCF
-model_config : NGCF_config
+model : MultiDAE
+model_config : MultiDAE_config
 
 # 사용할 데이터셋
-dataset : GraphDataset
+dataset : MatrixDataset
 
 seed : 22
+
+# mlflow
+experiment_name : Test_experiment
+run_name : test_run
+user : unknown
