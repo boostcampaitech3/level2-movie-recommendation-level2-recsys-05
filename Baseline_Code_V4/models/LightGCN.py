@@ -6,19 +6,19 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 
 
 class LightGCN(nn.Module):
-    def __init__(self, n_users, n_items, emb_dim, n_layers, reg, node_dropout, adj_mtx):
-        super().__init__()
+    def __init__(self, margs):
+        super(LightGCN, self).__init__()
 
         # initialize Class attributes
-        self.n_users = n_users
-        self.n_items = n_items
-        self.emb_dim = emb_dim
-        self.l = adj_mtx
+        self.n_users = margs.data_instance.num_user
+        self.n_items = margs.data_instance.num_item
+        self.emb_dim = margs.emb_dim
+        self.l = margs.data_instance.get_ngcf_adj_matrix_data()
         self.graph = self._convert_sp_mat_to_sp_tensor(self.l)
-
-        self.reg = reg
-        self.n_layers = n_layers
-        self.node_dropout = node_dropout
+        # print(self.graph)
+        self.reg = margs.reg
+        self.n_layers = margs.n_layers
+        self.node_dropout = margs.node_dropout
 
         # Initialize weights
         self.weight_dict = self._init_weights()
@@ -102,7 +102,7 @@ class LightGCN(nn.Module):
 
         final_embeddings = torch.stack(final_embeddings, dim=1)
         final_embeddings = torch.mean(final_embeddings, dim=1)
-
+        
         u_final_embeddings, i_final_embeddings = final_embeddings.split(
             [self.n_users, self.n_items], 0
         )
@@ -130,3 +130,6 @@ class LightGCN(nn.Module):
             bpr_loss += l2reg
 
         return bpr_loss
+    
+    def get_f_embeddings(self):
+        return self.u_final_embeddings.detach(), self.i_final_embeddings.detach() 
