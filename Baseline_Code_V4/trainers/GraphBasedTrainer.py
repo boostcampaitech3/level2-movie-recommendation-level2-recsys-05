@@ -18,12 +18,9 @@ class GraphBasedTrainer(Trainer):
             self.model.parameters(), lr=margs.lr, weight_decay=margs.weight_decay
         )
         
-        self.n_batch = args.n_batch
-        self.u_emb = self.model.u_final_embeddings.detach()
-        self.i_emb = self.model.i_final_embeddings.detach()
+        self.n_batch = margs.n_batch
         self.Rtr, self.Rte, self.R_total = self.dataset.get_R_data()
         self.k = margs.k
-        # self.ngcf_adj_matrix = self.dataset.get_ngcf_adj_matrix_data()
         
         
     def train(self):
@@ -48,6 +45,7 @@ class GraphBasedTrainer(Trainer):
 
     def evaluate(self):
         self.model.eval()
+        self.u_emb, self.i_emb = self.model.get_f_embeddings()
 
         # split matrices
         ue_splits = self.dataset.split_matrix(self.u_emb)
@@ -81,7 +79,7 @@ class GraphBasedTrainer(Trainer):
             TP = (test_items * topk_preds).sum(1)
             rec = TP / test_items.sum(1)
 
-            ndcg = metric.compute_ndcg_k(pred_items, test_items, test_indices, self.k)
+            ndcg = metric.get_graph_ndcg(pred_items, test_items, test_indices, self.k)
 
             recall_k.append(rec)
             ndcg_k.append(ndcg)
