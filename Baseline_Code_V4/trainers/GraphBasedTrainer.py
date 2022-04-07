@@ -1,19 +1,17 @@
 import torch
+import torch.optim
 from trainers.trainer import Trainer
-from trainers.Optimizer import Optimizer
 from importlib import import_module
 import trainers.metric as metric
 
 class GraphBasedTrainer(Trainer):
-    def __init__(self, model, args, margs, dataset): # -> None:
+    def __init__(self, model, args, margs, dataset) -> None:
         super().__init__(model, args, margs, dataset)
         
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         
-        # Optimizer 클래스 인스턴스 생성
-        optimizer_instance = Optimizer()
         # margs에 optimizer라고 명시된 optimizer attribute 이용
-        optimizer_func = getattr(optimizer_instance, margs.optimizer)
+        optimizer_func = getattr(import_module("torch.optim"), margs.optimizer)
         self.optimizer = optimizer_func(
             self.model.parameters(), lr=margs.lr, weight_decay=margs.weight_decay
         )
