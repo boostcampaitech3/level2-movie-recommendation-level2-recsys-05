@@ -9,6 +9,8 @@ from utils import increment_path
 import mlflow
 import mlflow.pytorch
 
+import nni
+
 class Experiment:
     def __init__(self, args, margs) -> None:
         self.args = args
@@ -47,10 +49,12 @@ class Experiment:
                 f"Epoch: {epoch:3d}| Train loss: {train_loss:.5f}| NDCG@10: {ndcg:.5f}| HIT@10: {hit:.5f}"
             )
 
+            # mlflow에 기록할 loss
             mlflow.log_metric("Train_loss", float(train_loss), epoch) 
             mlflow.log_metric("NDCG-10", float(ndcg), epoch) 
             mlflow.log_metric("HIT-10", float(hit), epoch) 
-            
+            # nni에 기록할 loss
+            nni.report_final_result(hit)
             
     def init_model(self, args, margs):
         model_module = getattr(import_module(f"models.{args.model}"), args.model)

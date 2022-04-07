@@ -7,6 +7,8 @@ from experiment import Experiment
 import mlflow 
 import mlflow.pytorch 
 
+import nni
+
 if __name__ == "__main__":
 
     args = None
@@ -36,10 +38,12 @@ if __name__ == "__main__":
     seed_everything(args.seed)
 
     experiment = Experiment(args, margs)
-
+    tuner_params = nni.get_next_parameter()
+    
     # -- mlflow
     remote_server_uri = "http://101.101.211.226:30005"
     mlflow.set_tracking_uri(remote_server_uri)
+    mlflow.set_experiment(args.experiment_name)
     mlflow_experiment = mlflow.get_experiment_by_name(args.experiment_name)
     client = mlflow.tracking.MlflowClient()
     

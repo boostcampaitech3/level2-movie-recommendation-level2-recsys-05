@@ -1,9 +1,9 @@
 import torch
+import torch.optim
 import numpy as np
 import tqdm
 from trainers.trainer import Trainer
 from torch.utils.data import DataLoader
-from trainers.Optimizer import Optimizer
 from importlib import import_module
 import trainers.metric as metric
 
@@ -25,10 +25,8 @@ class MatrixBasedTrainer(Trainer):
             pin_memory=True,
             num_workers=margs.num_workers,
         )
-        # Optimizer 클래스 인스턴스 생성
-        optimizer_instance = Optimizer()
         # margs에 optimizer라고 명시된 optimizer attribute 이용
-        optimizer_func = getattr(optimizer_instance, margs.optimizer)
+        optimizer_func = getattr(import_module("torch.optim"), margs.optimizer)
         self.optimizer = optimizer_func(
             self.model.parameters(), lr=margs.lr, weight_decay=margs.weight_decay
         )

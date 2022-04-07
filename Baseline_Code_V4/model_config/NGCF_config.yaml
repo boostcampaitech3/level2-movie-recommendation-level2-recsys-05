@@ -1,6 +1,6 @@
 trainer: GraphBasedTrainer
 use_data_loader: no
-optimizer: adam
+optimizer: Adam
 weight_decay: 0.00
 
 num_epochs: 5
