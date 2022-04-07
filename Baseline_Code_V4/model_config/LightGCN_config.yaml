@@ -1,0 +1,16 @@
+trainer: GraphBasedTrainer
+use_data_loader: no
+optimizer: adam
+weight_decay: 0.00
+
+num_epochs: 5
+reg: 0.00001
+lr: 0.0001
+emb_dim: 512
+n_layers: 3
+batch_size: 1024
+node_dropout: 0.2
+valid_samples: 10  # 검증에 사용할 sample 수
+seed: 22
+n_batch: 30
+k: 10
