@@ -1,0 +1,14 @@
+searchSpaceFile: search_space.json
+trialCommand: python /opt/ml/level2-movie-recommendation-level2-recsys-05/Baseline_Code_V4/new_train.py 
+
+trialGpuNumber: 1
+trialConcurrency: 2
+maxTrialNumber: 5
+
+tuner:
+  name: TPE
+  classArgs:
+    optimize_mode: maximize
+trainingService:
+  platform: local
+  useActiveGpu: true
