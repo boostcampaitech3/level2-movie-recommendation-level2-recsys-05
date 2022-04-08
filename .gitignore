@@ -10,3 +10,4 @@ model/
 Baseline_CodeV2/experiment_mlflow
 Baseline_CodeV2/mlruns
 Baseline_Code_V4/saved_model/
+Baseline_CodeV3/AutoML
