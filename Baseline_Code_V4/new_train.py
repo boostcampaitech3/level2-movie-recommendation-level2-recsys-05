@@ -53,6 +53,9 @@ if __name__ == "__main__":
         mlflow.set_tag("mlflow.user", args.user) 
         mlflow.set_tag("mlflow.runName", args.run_name) 
         
+        mlflow.log_params(dict(args))
+        mlflow.log_params(dict(margs_artifacts))
+        
         mlflow.log_dict(dict(args), args.run_name+"_args.yaml") 
         mlflow.log_dict(dict(margs_artifacts), args.run_name+"_margs.yaml")  
         
