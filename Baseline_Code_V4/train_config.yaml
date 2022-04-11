@@ -2,10 +2,22 @@
 data_dir: "/opt/ml/input/data/train"
 
 submission_path : "../submission"
-submission_name : "multi-DAE_v2_submission.csv"
+submission_name : "test_submission.csv"
 
 # 모델 저장 경로 model_name : "Multi-DAE_v2.pt"
-model_dir : "saved_model"
-name : Multi_DAE_test
+model_dir : "./saved_model"
+name : MultiDAE
 
-seed : 5
+# 사용할 모델
+model : MultiDAE
+model_config : MultiDAE_config
+
+# 사용할 데이터셋
+dataset : MatrixDataset
+
+seed : 22
+
+# mlflow
+experiment_name : Test_experiment
+run_name : test_run
+user : unknown

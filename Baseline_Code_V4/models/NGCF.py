@@ -8,30 +8,20 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 
 
 class NGCF(nn.Module):
-    def __init__(
-        self,
-        n_users,
-        n_items,
-        emb_dim,
-        layers,
-        reg,
-        node_dropout,
-        mess_dropout,
-        adj_mtx,
-    ):
-        super().__init__()
+    def __init__(self, margs):
+        super(NGCF, self).__init__()
 
         # initialize Class attributes
-        self.n_users = n_users
-        self.n_items = n_items
-        self.emb_dim = emb_dim
-        self.l_matrix = adj_mtx
-        self.l_plus_i_matrix = adj_mtx + sp.eye(adj_mtx.shape[0])
-        self.reg = reg
-        self.layers = layers
+        self.n_users = margs.data_instance.num_user
+        self.n_items = margs.data_instance.num_item
+        self.emb_dim = margs.emb_dim
+        self.l_matrix = margs.data_instance.get_ngcf_adj_matrix_data()
+        self.l_plus_i_matrix = self.l_matrix + sp.eye(self.l_matrix.shape[0])
+        self.reg = margs.reg
+        self.layers = margs.layers
         self.n_layers = len(self.layers)
-        self.node_dropout = node_dropout
-        self.mess_dropout = mess_dropout
+        self.node_dropout = margs.node_dropout
+        self.mess_dropout = margs.mess_dropout
 
         # Initialize weights
         self.weight_dict = self._init_weights()
@@ -235,3 +225,6 @@ class NGCF(nn.Module):
         # ---------- Fill above ----------
 
         return bpr_loss
+
+    def get_f_embeddings(self):
+        return self.u_final_embeddings.detach(), self.i_final_embeddings.detach()

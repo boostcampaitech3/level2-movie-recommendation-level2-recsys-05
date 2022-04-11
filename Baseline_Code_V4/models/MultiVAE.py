@@ -14,10 +14,13 @@ class MultiVAE(nn.Module):
     https://arxiv.org/abs/1802.05814
     """
 
-    def __init__(self, p_dims, dropout_rate=0.5):
+    def __init__(self, margs):
         super(MultiVAE, self).__init__()
-        self.p_dims = p_dims
-        self.q_dims = p_dims[::-1]
+        self.p_dims = margs.p_dims + [margs.data_instance.num_item]
+        self.q_dims = self.p_dims[::-1]
+        self.anneal_cap = margs.anneal_cap
+        self.total_anneal_steps = margs.total_anneal_steps
+        self.update_count = 1
 
         temp_q_dims = self.q_dims[:-1] + [self.q_dims[-1] * 2]
 
@@ -35,13 +38,28 @@ class MultiVAE(nn.Module):
             ]
         )
 
-        self.drop = nn.Dropout(dropout_rate)
+        self.drop = nn.Dropout(margs.dropout_rate)
         self.init_weights()
 
-    def forward(self, input):
+    def forward(self, input, calculate_loss=True):
         mu, logvar = self.encode(input)
         z = self.reparameterize(mu, logvar)
-        return self.decode(z), mu, logvar
+        h = self.decode(z)
+        if calculate_loss:
+            anneal = min(
+                self.anneal_cap, 1.0 * self.update_count / self.total_anneal_steps
+            )
+            self.update_count += 1
+
+            BCE = -torch.mean(torch.sum(F.log_softmax(h, 1) * input, -1))
+            KLD = -0.5 * torch.mean(
+                torch.sum(1 + logvar - mu.pow(2) - logvar.exp(), dim=1)
+            )
+            BCE_KLD_loss = BCE + anneal * KLD
+            return BCE_KLD_loss
+
+        else:
+            return h
 
     def encode(self, input):
         h = F.normalize(input)

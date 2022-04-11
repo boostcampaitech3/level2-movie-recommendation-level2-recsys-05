@@ -1,0 +1,4 @@
+{
+    "optimizer": {"_type":"choice", "_value": ["Adam", "SGD", "AdamW"]},
+    "lr":{"_type":"choice","_value":[0.00001, 0.0001, 0.001]}
+}
