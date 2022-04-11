@@ -1,16 +1,19 @@
 trainer: MatrixBasedTrainer
 use_data_loader: yes
-optimizer: adam
+optimizer: Adam
 preprocessor: AEDataset
-weight_decay: 0.00
+weight_decay: 0.01
 valid_samples: 10  # 검증에 사용할 sample 수
-lr: 0.001
-batch_size: 128
-num_epochs: 50
+lr: 0.0005
+batch_size: 500
+num_epochs: 200
 num_workers: 2
 
-hidden_dim: 300
-latent_dim: 100
+hidden_dim: 600
+latent_dim: 200
 dropout_rate: 0.7
 gamma: 0.0005
 beta: None
+
+e_num_epochs: 2
+d_num_epochs: 1
