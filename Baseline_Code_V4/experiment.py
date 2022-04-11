@@ -41,7 +41,7 @@ class Experiment:
                 )
                 torch.save(
                     self.model.state_dict(),
-                    os.path.join(self.save_dir, f"{self.args.name}_best.pth"),
+                    os.path.join(self.save_dir, f"{self.args.name}_best.pt"),
                 )
                 mlflow.pytorch.log_model(self.model, f"{self.args.name}_bestModel") 
 
@@ -54,7 +54,7 @@ class Experiment:
             mlflow.log_metric("NDCG-10", float(ndcg), epoch) 
             mlflow.log_metric("HIT-10", float(hit), epoch) 
             # nni에 기록할 loss
-            nni.report_final_result(hit)
+            nni.report_final_result(best_hit)
             
     def init_model(self, args, margs):
         model_module = getattr(import_module(f"models.{args.model}"), args.model)
