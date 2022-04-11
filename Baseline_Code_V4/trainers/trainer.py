@@ -15,3 +15,8 @@ class Trainer(metaclass=ABCMeta):
     @abstractclassmethod
     def evaluate(self):
         pass
+    
+    @abstractclassmethod
+    def predict(self):
+        pass
+    
