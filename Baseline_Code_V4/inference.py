@@ -4,14 +4,8 @@ from trainers.trainer import Trainer
 import os
 import torch
 import torch.nn as nn
-from utils import increment_path
 
-import mlflow
-import mlflow.pytorch
-
-import nni
-
-class Experiment:
+class Inference:
     def __init__(self, args, margs) -> None:
         self.args = args
         self.margs = margs
@@ -21,41 +15,20 @@ class Experiment:
             self.model, args, margs, self.dataset
         )  # 트레이터 인스턴스 init
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
-        self.save_dir = increment_path(os.path.join(args.model_dir, args.name))
+        self.model_dir = os.path.join(args.model_dir, args.name)
+        self.save_dir = os.path.join(args.submission_path, args.submission_name)
         os.makedirs(self.save_dir, exist_ok=True)
 
     def run(self) -> None:
-        print("run experiment")
-        self.model.to(self.device)
+        print("run inference")
+        try:
+            self.model.load_state_dict(torch.load(os.path.join(self.model_dir, self.args.name)+'.pt'))
+        except:
+            self.model.load_state_dict(torch.load(os.path.join(self.model_dir, self.args.name)+'.pth'))
 
-        best_hit = 0
-        for epoch in range(1, self.margs.num_epochs + 1):
-
-            train_loss = self.trainer.train()
-            ndcg, hit = self.trainer.evaluate()
-
-            if best_hit < hit:
-                best_hit = hit
-                print(
-                    f"New best model for best hit! HIT@10: {best_hit:.5f} saving the best model.."
-                )
-                torch.save(
-                    self.model.state_dict(),
-                    os.path.join(self.save_dir, f"{self.args.name}_best.pt"),
-                )
-                mlflow.pytorch.log_model(self.model, f"{self.args.name}_bestModel") 
-
-            print(
-                f"Epoch: {epoch:3d}| Train loss: {train_loss:.5f}| NDCG@10: {ndcg:.5f}| HIT@10: {hit:.5f}"
-            )
-
-            # mlflow에 기록할 loss
-            mlflow.log_metric("Train_loss", float(train_loss), epoch) 
-            mlflow.log_metric("NDCG-10", float(ndcg), epoch) 
-            mlflow.log_metric("HIT-10", float(hit), epoch) 
-            # nni에 기록할 loss
-            nni.report_final_result(best_hit)
-            
+        submision = self.trainer.predict()
+        submision.to_csv(os.path.join(self.save_dir, self.args.submission_name)+'.csv', index=False)
+        
     def init_model(self, args, margs):
         model_module = getattr(import_module(f"models.{args.model}"), args.model)
         # 모델에서 데이터셋에 의존된 부분이 존재 함으로 모델에 데이터셋 인스턴스를 넘겨줌

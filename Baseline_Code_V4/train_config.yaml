@@ -1,16 +1,16 @@
 # 데이터 경로
 data_dir: "/opt/ml/input/data/train"
-
+mode: "experiment" # experiment, inference
 submission_path : "../submission"
 submission_name : "test_submission.csv"
 
 # 모델 저장 경로 model_name : "Multi-DAE_v2.pt"
 model_dir : "./saved_model"
-name : MultiDAE
+name : RecVAE_v4
 
 # 사용할 모델
-model : MultiDAE
-model_config : MultiDAE_config
+model : RecVAE
+model_config : RecVAE_config
 
 # 사용할 데이터셋
 dataset : MatrixDataset
@@ -18,6 +18,6 @@ dataset : MatrixDataset
 seed : 22
 
 # mlflow
-experiment_name : Test_experiment
-run_name : test_run
-user : unknown
+experiment_name : NNI_experiment
+run_name : hyperparameter_tunning
+user : yujeong
