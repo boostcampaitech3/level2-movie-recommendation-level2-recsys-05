@@ -20,7 +20,7 @@ class MatrixBasedTrainer(Trainer):
 
         self.dataloader = DataLoader(
             self.preprocessed_dataset,
-            batch_size=args.batch_size,
+            batch_size=margs.batch_size,
             shuffle=True,
             pin_memory=True,
             num_workers=margs.num_workers,
