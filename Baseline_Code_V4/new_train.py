@@ -9,8 +9,11 @@ import mlflow
 import mlflow.pytorch 
 
 import nni
+from nni.utils import merge_parameter
 
 if __name__ == "__main__":
+    tuner_params = None
+    tuner_params = nni.get_next_parameter()
 
     args = None
     with open("train_config.yaml") as f:
@@ -30,6 +33,7 @@ if __name__ == "__main__":
         tmp_args = yaml.load(f, Loader=yaml.FullLoader)
         margs = dotdict(tmp_args)
     margs_artifacts = dict(margs)
+    margs = merge_parameter(margs, tuner_params)
     
     print("-" * 20, "model arguments list", "-" * 20)
     for k, v in margs.items():
@@ -40,7 +44,6 @@ if __name__ == "__main__":
 
     if args.mode == "experiment":
         experiment = Experiment(args, margs)
-        tuner_params = nni.get_next_parameter()
         
         # -- mlflow
         remote_server_uri = "http://101.101.211.226:30005"
