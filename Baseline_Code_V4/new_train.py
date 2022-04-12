@@ -32,8 +32,9 @@ if __name__ == "__main__":
     with open(f"./model_config/{args.model_config}.yaml") as f:
         tmp_args = yaml.load(f, Loader=yaml.FullLoader)
         margs = dotdict(tmp_args)
-    margs_artifacts = dict(margs)
+        
     margs = merge_parameter(margs, tuner_params)
+    margs_artifacts = dict(margs)
     
     print("-" * 20, "model arguments list", "-" * 20)
     for k, v in margs.items():
