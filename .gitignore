@@ -2,10 +2,13 @@ __pycache__/
 *.py[cod]
 Baseline_CodeV2/__pycache__/
 output/
-.idea/
+.idea
 .ipynb_checkpoints
 .git
+.idea/
 submission/
 model/
 Baseline_CodeV2/experiment_mlflow
 Baseline_CodeV2/mlruns
+Baseline_Code_V4/saved_model/
+Baseline_CodeV3/AutoML

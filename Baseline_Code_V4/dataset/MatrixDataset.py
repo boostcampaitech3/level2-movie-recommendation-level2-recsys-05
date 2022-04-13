@@ -1,20 +1,17 @@
-import os
+from dataset.dataset import Dataset
 import pandas as pd
-import numpy as np
-import scipy.sparse as sp
+import os
 from collections import defaultdict
+import numpy as np
 import torch
-from torch.utils.data import Dataset
+import scipy.sparse as sp
 
 
-class MakeMatrixDataSet:
-    """
-    MatrixDataSet 생성
-    """
-
-    def __init__(self, config):
-        self.config = config
-        self.df = pd.read_csv(os.path.join(self.config.data_path, "train_ratings.csv"))
+class MatrixDataset(Dataset):
+    def __init__(self, args, margs):
+        self.args = args
+        self.margs = margs
+        self.df = pd.read_csv(os.path.join(self.args.data_dir, "train_ratings.csv"))
 
         self.item_encoder, self.item_decoder = self.generate_encoder_decoder("item")
         self.user_encoder, self.user_decoder = self.generate_encoder_decoder("user")
@@ -61,11 +58,11 @@ class MakeMatrixDataSet:
             users[user].append(item)
 
         for user in users:
-            np.random.seed(self.config.seed)
+            np.random.seed(self.args.seed)
 
             user_total = users[user]
             valid = np.random.choice(
-                user_total, size=self.config.valid_samples, replace=False
+                user_total, size=self.margs.valid_samples, replace=False
             ).tolist()
             train = list(set(user_total) - set(valid))
 
@@ -104,16 +101,3 @@ class MakeMatrixDataSet:
                 X[user, item_list] = 1.0
 
         return X.tocsr()
-
-
-class AEDataSet(Dataset):
-    def __init__(self, num_user):
-        self.num_user = num_user
-        self.users = [i for i in range(num_user)]
-
-    def __len__(self):
-        return self.num_user
-
-    def __getitem__(self, idx):
-        user = self.users[idx]
-        return torch.LongTensor([user])

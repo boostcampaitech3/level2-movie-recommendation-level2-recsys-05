@@ -1,3 +1,4 @@
+from dataset.dataset import Dataset
 import os
 import pandas as pd
 import random
@@ -6,14 +7,11 @@ from collections import defaultdict
 import scipy.sparse as sp
 
 
-class MakeGraphDataSet:
-    """
-    GraphDataSet 생성
-    """
-
-    def __init__(self, config):
-        self.config = config
-        self.df = pd.read_csv(os.path.join(self.config.data_path, "train_ratings.csv"))
+class GraphDataset(Dataset):
+    def __init__(self, args, margs):
+        self.args = args
+        self.margs = margs
+        self.df = pd.read_csv(os.path.join(self.args.data_dir, "train_ratings.csv"))
 
         self.item_encoder, self.item_decoder = self.generate_encoder_decoder("item")
         self.user_encoder, self.user_decoder = self.generate_encoder_decoder("user")
@@ -28,7 +26,7 @@ class MakeGraphDataSet:
         self.R_train, self.R_valid, self.R_total = self.generate_dok_matrix()
         self.ngcf_adj_matrix = self.generate_ngcf_adj_matrix()
         self.n_train = len(self.R_train)
-        self.batch_size = self.config.batch_size
+        self.batch_size = self.margs.batch_size
 
     def generate_encoder_decoder(self, col: str) -> dict:
         """
@@ -66,11 +64,11 @@ class MakeGraphDataSet:
             users[user].append(item)
 
         for user in users:
-            np.random.seed(self.config.seed)
+            np.random.seed(self.args.seed)
 
             user_total = users[user]
             valid = np.random.choice(
-                user_total, size=self.config.valid_samples, replace=False
+                user_total, size=self.margs.valid_samples, replace=False
             ).tolist()
             train = list(set(user_total) - set(valid))
 
@@ -88,11 +86,13 @@ class MakeGraphDataSet:
             train_items = self.user_train[user]
             valid_items = self.user_valid[user]
 
-            R_total[user, train_items] = 1.0
-            R_total[user, valid_items] = 1.0
+            for train_item in train_items:
+                R_train[user, train_item] = 1.0
+                R_total[user, train_item] = 1.0
 
-            R_train[user, train_items] = 1.0
-            R_valid[user, valid_items] = 1.0
+            for valid_item in valid_items:
+                R_valid[user, valid_item] = 1.0
+                R_total[user, valid_item] = 1.0
 
         return R_train, R_valid, R_total
 
@@ -121,7 +121,7 @@ class MakeGraphDataSet:
         return ngcf_adj_matrix.tocsr()
 
     def sampling(self):
-        users = random.sample(self.exist_users, self.config.batch_size)
+        users = random.sample(self.exist_users, self.margs.batch_size)
 
         def sample_pos_items_for_u(u, num):
             pos_items = self.user_train[u]
@@ -146,5 +146,14 @@ class MakeGraphDataSet:
     def get_R_data(self):
         return self.R_train, self.R_valid, self.R_total
 
+    def split_matrix(self, X, n_splits=10):
+        splits = []
+        chunk_size = X.shape[0] // n_splits
+        for i in range(n_splits):
+            start = i * chunk_size
+            end = X.shape[0] if i == n_splits - 1 else (i + 1) * chunk_size
+            splits.append(X[start:end])
+        return splits
+    
     def get_ngcf_adj_matrix_data(self):
         return self.ngcf_adj_matrix
