@@ -53,8 +53,9 @@ class Experiment:
             mlflow.log_metric("Train_loss", float(train_loss), epoch) 
             mlflow.log_metric("NDCG-10", float(ndcg), epoch) 
             mlflow.log_metric("HIT-10", float(hit), epoch) 
+            nni.report_intermediate_result(hit)
             # nni에 기록할 loss
-            nni.report_final_result(best_hit)
+        nni.report_final_result(best_hit)
             
     def init_model(self, args, margs):
         model_module = getattr(import_module(f"models.{args.model}"), args.model)
