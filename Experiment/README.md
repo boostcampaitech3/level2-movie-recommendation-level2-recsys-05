@@ -7,15 +7,15 @@
 ## 2. Model
 
 ### (1) AutoEncoder 기반 (유저-아이템 상호작용을 복원할 수 있는 parameterized function을 만듬)
-- AutoRec (non-)
-- Multi-DAE
-- Multi-VAE
-- Mutli-CDAE
-- RecVAE
-- EASE
-- Multi-EASE
-- ADMM-SLIM
-- EASER
+- AutoRec (non-linear)
+- Multi-DAE (non-linear)
+- Multi-VAE (non-linear)
+- Mutli-CDAE (non-linear)
+- RecVAE (non-linear)
+- EASE (linear)
+- Multi-EASE (linear)
+- ADMM-SLIM (linear)
+- EASER (linear)
 
 ### (2) Transformer 기반 (유저의 영화 평가 이력 sequence를 바탕으로 다음 영화를 예)
 - SASRec
@@ -32,3 +32,7 @@
 - NGCF
 
 ## 3. Ensemble
+- 모델 별 candidate 아이템의 순위를 바탕으로 1 / log2(rank + 1)을 계산하여 모델 별 아이템 score 값을 구함
+- 모델 별 아이템 score 값을 sum하여 candidate 집단에서 re-ranking
+- 모델 별로 가중치를 두어 re-ranking
+- 실험한 모델 중 가장 효과적인 조합을 찾기 위해 Model Best Combination Serch를 진행
