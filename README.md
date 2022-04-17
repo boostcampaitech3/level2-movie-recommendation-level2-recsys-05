@@ -1,5 +1,12 @@
 <p align="center"><img src="https://user-images.githubusercontent.com/65529313/163712073-7d2dcd09-4c1f-4bab-935f-42de292300bb.png" /></p>
 
+<div align="center">
+05 TEAM 알잘딱깔센 <br/>
+
+## Movie Recommendation
+  
+</div>
+
 # 🏆️ 프로젝트 목표
 - 사용자의 영화 평가 이력을 바탕으로 사용자가 선호할 10개의 영화를 예측
 
