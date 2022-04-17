@@ -19,7 +19,7 @@
 -  validation set에서 성능이 오르면 리더 보드에서도 동일하게 성능이 오르는 것을 확인하여 빠른 속도로 다양한 실험을 진행
 
 # 개요
-<p align="center"><img src="https://user-images.githubusercontent.com/65529313/163712255-1d1a02de-8eb1-4a6b-905d-ebe7771ee7fa.png" width="1000" height="400"/></p>
+<p align="center"><img src="https://user-images.githubusercontent.com/65529313/163713560-2eabc68f-1aaa-4bf8-ad14-0e6078a817ab.png" width="1000" height="400"/></p>
 
 # 모델 결과
 <p align="center"><img src="https://user-images.githubusercontent.com/65529313/163712308-8c09cdd5-7cde-4bb8-8e3d-cddd329bde53.png" width="1000" height="400"/></p>
