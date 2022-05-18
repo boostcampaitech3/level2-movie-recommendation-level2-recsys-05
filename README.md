@@ -41,7 +41,7 @@
 - 추상 클래스를 활용하여 각 코드별 의존성을 낮춤
 - MLFlow와 NNI를 적용하여, 효과적이고 효율적인 실험 관리를 진행
 
-# 🎥 프로젝트 결과
+# 🎥 프로젝트 결과 - private 4위
 <p align="center"><img src="https://user-images.githubusercontent.com/65529313/163712409-28c29a8d-b13d-4328-a617-6818f232c84e.png" /></p>
 
 - AdmmSLIM, EASER, RecVAE, Multi-DAE, Multi-VAE 모델을 사용하여 Weighted Ensemble을 진행했을 때 가장 좋은 결과를 얻음
